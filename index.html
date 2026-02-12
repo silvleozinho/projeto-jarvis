@@ -9,29 +9,109 @@
       { "imports": { "@google/generative-ai": "https://esm.run/@google/generative-ai" } }
     </script>
     <style>
-        body { background: #000; color: #00f2ff; font-family: 'Segoe UI', sans-serif; margin: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; text-transform: uppercase; }
-        #header { text-align: center; padding: 15px; border-bottom: 2px solid #00f2ff; box-shadow: 0 0 15px #00f2ff; letter-spacing: 5px; font-weight: bold; background: #000; z-index: 10; }
-        #chat { flex: 1; overflow-y: auto; padding: 20px; background: radial-gradient(circle, #001a1a 0%, #000 100%); display: flex; flex-direction: column; }
-        .msg { margin-bottom: 12px; padding: 12px; border-radius: 8px; max-width: 80%; font-size: 14px; border: 1px solid rgba(0, 242, 255, 0.2); line-height: 1.4; }
-        .jarvis { background: rgba(0, 242, 255, 0.05); border-left: 4px solid #00f2ff; align-self: flex-start; }
-        .user { background: #0c1a1a; border-right: 4px solid #fff; align-self: flex-end; color: #eee; }
-        #footer { height: 130px; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #000; border-top: 1px solid #111; }
-        #indicador { width: 65px; height: 65px; border-radius: 50%; border: 2px solid #00f2ff; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 10px #00f2ff; font-size: 24px; transition: 0.3s; }
-        .active { animation: pulse 0.8s infinite; border-color: #fff; box-shadow: 0 0 25px #00f2ff; }
+        /* FUNDO ANIMADO DE HOLOGRAMA */
+        body { 
+            background: #000; 
+            color: #00f2ff; 
+            font-family: 'Segoe UI', sans-serif; 
+            margin: 0; 
+            display: flex; 
+            flex-direction: column; 
+            height: 100vh; 
+            overflow: hidden; 
+            text-transform: uppercase;
+            position: relative;
+        }
+
+        /* Efeito de Estrelas/Partículas se mexendo */
+        body::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: 
+                radial-gradient(1px 1px at 20px 30px, #fff, rgba(0,0,0,0)),
+                radial-gradient(1px 1px at 40px 70px, #00f2ff, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 50px 160px, #fff, rgba(0,0,0,0));
+            background-size: 200px 200px;
+            animation: stars 4s linear infinite;
+            z-index: -1;
+            opacity: 0.5;
+        }
+
+        @keyframes stars {
+            from { transform: translateY(0); }
+            to { transform: translateY(-200px); }
+        }
+
+        /* Linhas de Scanner de Holograma */
+        .hologram-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 242, 255, 0.05) 50%), 
+                        linear-gradient(90deg, rgba(255, 0, 0, 0.02), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.02));
+            background-size: 100% 4px, 3px 100%;
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        #header { 
+            text-align: center; padding: 15px; 
+            border-bottom: 2px solid #00f2ff; 
+            box-shadow: 0 0 15px #00f2ff; 
+            letter-spacing: 5px; font-weight: bold; 
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
+        }
+
+        #chat { 
+            flex: 1; overflow-y: auto; padding: 20px; 
+            display: flex; flex-direction: column; 
+            z-index: 1;
+        }
+
+        .msg { 
+            margin-bottom: 12px; padding: 12px; border-radius: 8px; 
+            max-width: 80%; font-size: 14px; 
+            border: 1px solid rgba(0, 242, 255, 0.3); 
+            backdrop-filter: blur(10px);
+        }
+
+        .jarvis { background: rgba(0, 242, 255, 0.1); border-left: 4px solid #00f2ff; align-self: flex-start; }
+        .user { background: rgba(12, 26, 26, 0.6); border-right: 4px solid #fff; align-self: flex-end; color: #eee; }
+
+        #footer { 
+            height: 130px; display: flex; flex-direction: column; 
+            align-items: center; justify-content: center; 
+            background: rgba(0, 0, 0, 0.8); 
+            border-top: 1px solid #111; 
+            backdrop-filter: blur(5px);
+        }
+
+        #indicador { 
+            width: 65px; height: 65px; border-radius: 50%; 
+            border: 2px solid #00f2ff; 
+            display: flex; align-items: center; justify-content: center; 
+            box-shadow: 0 0 20px #00f2ff; 
+            font-size: 24px; color: #00f2ff;
+        }
+
+        .active { animation: pulse 0.8s infinite; border-color: #fff; box-shadow: 0 0 30px #00f2ff; }
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
     </style>
 </head>
 <body>
+    <div class="hologram-overlay"></div>
     <div id="header">SISTEMA J.A.R.V.I.S.</div>
     <div id="chat"></div>
     <div id="footer">
         <div id="indicador">💠</div>
-        <p style="font-size: 10px; margin-top: 10px; color: #555;">Diga "Jarvis" para ativar</p>
+        <p style="font-size: 10px; margin-top: 10px; color: #00f2ff; opacity: 0.6;">Diga "Jarvis" para ativar</p>
     </div>
 
     <script type="module">
         import { GoogleGenerativeAI } from "@google/generative-ai";
 
+        // CONFIGURAÇÃO: INSIRA SUA CHAVE ABAIXO
         const API_KEY = "AIzaSyAgQd73RpCDiiryWChwhZPKgcl7Mj6ct8Y"; 
         const genAI = new GoogleGenerativeAI(API_KEY);
         const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
@@ -43,13 +123,11 @@
             window.speechSynthesis.cancel();
             const msg = new SpeechSynthesisUtterance(texto);
             const vozes = window.speechSynthesis.getVoices();
-            // Tenta encontrar uma voz masculina/robótica do Google
             let vozPreferida = vozes.find(v => v.lang === 'pt-BR' && v.name.includes('Google')) || vozes[0];
-            
             msg.voice = vozPreferida;
             msg.lang = 'pt-BR';
-            msg.rate = 1.05; // Velocidade Jarvis
-            msg.pitch = 0.85; // Tom mais grave/imponente
+            msg.rate = 1.05;
+            msg.pitch = 0.85;
             msg.onend = () => ligarOuvinte();
             window.speechSynthesis.speak(msg);
         }
@@ -72,50 +150,34 @@
         };
 
         async function executarAcao(texto) {
-            if(texto && texto !== "") {
-                chat.innerHTML += `<div class="msg user">${texto}</div>`;
-            }
+            if(texto && texto !== "") chat.innerHTML += `<div class="msg user">${texto}</div>`;
 
-            // COMANDOS DE SISTEMA
+            // COMANDOS DE VOZ (LIGAR, GOOGLE, APPS)
             if (texto.includes("ligar para")) {
                 let alvo = texto.replace("ligar para", "").trim();
-                falar(`Localizando contato ${alvo}. Iniciando chamada.`);
+                falar(`Localizando sinal para ${alvo}.`);
                 window.location.href = `tel:${alvo}`;
                 return;
             }
-            if (texto.includes("pesquise no google") || texto.includes("pesquisar no google")) {
-                let busca = texto.replace(/pesquisar no google|pesquise no google/g, "").trim();
-                falar(`Acessando arquivos globais sobre ${busca}.`);
+            if (texto.includes("pesquise no google")) {
+                let busca = texto.replace("pesquise no google", "").trim();
+                falar(`Consultando base de dados sobre ${busca}.`);
                 window.open(`https://www.google.com/search?q=${busca}`, '_blank');
                 return;
             }
             if (texto.includes("abrir")) {
-                if (texto.includes("spotify")) {
-                    falar("Sim, senhor. Iniciando Spotify.");
-                    window.location.href = "intent://#Intent;scheme=spotify;package=com.spotify.music;end";
-                    return;
-                }
-                if (texto.includes("youtube music")) {
-                    falar("YouTube Music online.");
-                    window.location.href = "intent://#Intent;scheme=music;package=com.google.android.apps.youtube.music;end";
-                    return;
-                }
-                if (texto.includes("whatsapp")) {
-                    falar("Cuidado com o que escreve, senhor. Abrindo WhatsApp.");
-                    window.location.href = "intent://#Intent;scheme=whatsapp;package=com.whatsapp;end";
-                    return;
-                }
+                if (texto.includes("spotify")) { falar("Spotify online."); window.location.href = "intent://#Intent;scheme=spotify;package=com.spotify.music;end"; return; }
+                if (texto.includes("whatsapp")) { falar("Protocolo de mensagens aberto."); window.location.href = "intent://#Intent;scheme=whatsapp;package=com.whatsapp;end"; return; }
             }
 
-            // RESPOSTA IA SARCÁSTICA E LETRADA
             try {
-                const promptIA = `Você é o sistema J.A.R.V.I.S. Responda de forma extremamente culta, polida e com um sarcasmo refinado que questione levemente a inteligência do usuário. Seja breve. Comando: ${texto || "Sim, senhor?"}`;
+                const promptIA = `Você é o JARVIS. Use vocabulário letrado, culto e sarcasmo elegante. Curto. Comando: ${texto || "Sim?"}`;
                 const result = await model.generateContent(promptIA);
                 const resposta = await result.response.text();
                 chat.innerHTML += `<div class="msg jarvis"><b>JARVIS:</b> ${resposta}</div>`;
                 falar(resposta);
             } catch (e) {
-                falar("Até minha paciência tem limites, senhor. Erro de conexão.");
+                falar("Sistemas instáveis, senhor.");
                 ligarOuvinte();
             }
             chat.scrollTop = chat.scrollHeight;
@@ -123,7 +185,7 @@
 
         window.onload = () => {
             setTimeout(() => {
-                falar("Sistemas carregados. Jarvis online e pronto para o seu comando, senhor.");
+                falar("Sistemas de holograma online. Jarvis pronto para operar.");
                 ligarOuvinte();
             }, 1000);
         };

@@ -3,108 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>J.A.R.V.I.S. OS</title>
+    <title>J.A.R.V.I.S. DIAGNÓSTICO</title>
     <link rel="manifest" href="manifest.json">
     <script type="importmap">
       { "imports": { "@google/generative-ai": "https://esm.run/@google/generative-ai" } }
     </script>
     <style>
-        /* DESIGN HOLOGRÁFICO DAS INDÚSTRIAS STARK */
-        body { 
-            background: #000; color: #00f2ff; font-family: 'Segoe UI', sans-serif; 
-            margin: 0; display: flex; flex-direction: column; height: 100vh; 
-            overflow: hidden; text-transform: uppercase; position: relative;
-        }
-
-        /* FUNDO ANIMADO (ESTRELAS/PARTÍCULAS) */
-        body::before {
-            content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: 
-                radial-gradient(1px 1px at 20px 30px, #fff, rgba(0,0,0,0)),
-                radial-gradient(1px 1px at 150px 150px, #00f2ff, rgba(0,0,0,0)),
-                radial-gradient(2px 2px at 50px 100px, #fff, rgba(0,0,0,0));
-            background-size: 250px 250px;
-            animation: moveBackground 8s linear infinite;
-            z-index: -1; opacity: 0.4;
-        }
-
-        @keyframes moveBackground {
-            from { transform: translateY(0); }
-            to { transform: translateY(-250px); }
-        }
-
-        /* TELA DE OVERLAY INICIAL */
-        #overlay-inicio { 
-            position: fixed; top:0; left:0; width:100%; height:100%; 
-            background: rgba(0,0,0,0.95); z-index: 1000; 
-            display: flex; flex-direction: column; align-items: center; justify-content: center; 
-        }
-
-        .btn-start { 
-            padding: 20px 40px; border: 2px solid #00f2ff; background: none; 
-            color: #00f2ff; font-size: 18px; cursor: pointer; 
-            box-shadow: 0 0 20px #00f2ff; text-transform: uppercase; letter-spacing: 2px;
-        }
-
-        #header { 
-            text-align: center; padding: 15px; border-bottom: 2px solid #00f2ff; 
-            box-shadow: 0 0 15px #00f2ff; letter-spacing: 5px; font-weight: bold; 
-            background: rgba(0,0,0,0.8); backdrop-filter: blur(5px);
-        }
-
-        #chat { 
-            flex: 1; overflow-y: auto; padding: 20px; 
-            display: flex; flex-direction: column; z-index: 1;
-        }
-
-        .msg { 
-            margin-bottom: 12px; padding: 12px; border-radius: 8px; 
-            max-width: 80%; font-size: 13px; line-height: 1.5;
-            backdrop-filter: blur(10px); border: 1px solid rgba(0, 242, 255, 0.2);
-        }
-
-        .jarvis { background: rgba(0, 242, 255, 0.1); border-left: 4px solid #00f2ff; align-self: flex-start; }
-        .user { background: rgba(255, 255, 255, 0.05); border-right: 4px solid #fff; align-self: flex-end; color: #eee; }
-
-        #footer { 
-            height: 140px; display: flex; flex-direction: column; 
-            align-items: center; justify-content: center; 
-            background: rgba(0,0,0,0.9); border-top: 1px solid #111;
-        }
-
-        #indicador { 
-            width: 70px; height: 70px; border-radius: 50%; 
-            border: 2px solid #00f2ff; display: flex; align-items: center; 
-            justify-content: center; box-shadow: 0 0 20px #00f2ff; font-size: 30px;
-            transition: 0.3s;
-        }
-
-        .active { animation: pulse 0.8s infinite; border-color: #fff; box-shadow: 0 0 30px #00f2ff; }
+        body { background: #000; color: #00f2ff; font-family: 'Segoe UI', sans-serif; margin: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; text-transform: uppercase; }
+        #overlay-inicio { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.9); z-index: 1000; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        #header { text-align: center; padding: 15px; border-bottom: 2px solid #00f2ff; box-shadow: 0 0 15px #00f2ff; background: #000; }
+        #chat { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; background: radial-gradient(circle, #001a1a 0%, #000 100%); }
+        .msg { margin-bottom: 12px; padding: 12px; border-radius: 8px; max-width: 85%; font-size: 13px; border: 1px solid rgba(0, 242, 255, 0.2); }
+        .jarvis { background: rgba(0, 242, 255, 0.05); border-left: 4px solid #00f2ff; align-self: flex-start; }
+        .user { background: #0c1a1a; border-right: 4px solid #fff; align-self: flex-end; }
+        .erro-card { background: rgba(255, 0, 0, 0.1) !important; border: 1px solid red !important; color: #ff4444 !important; font-family: monospace; }
+        #footer { height: 120px; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #000; border-top: 1px solid #111; }
+        #indicador { width: 60px; height: 60px; border-radius: 50%; border: 2px solid #00f2ff; display: flex; align-items: center; justify-content: center; font-size: 24px; box-shadow: 0 0 10px #00f2ff; }
+        .active { animation: pulse 0.8s infinite; }
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
-
-        #status-txt { font-size: 10px; margin-top: 10px; color: #00f2ff; opacity: 0.6; letter-spacing: 1px; }
+        .btn-start { padding: 15px 30px; border: 2px solid #00f2ff; background: none; color: #00f2ff; cursor: pointer; text-transform: uppercase; box-shadow: 0 0 15px #00f2ff; }
     </style>
 </head>
 <body>
 
     <div id="overlay-inicio">
-        <button class="btn-start" onclick="iniciarSistema()">Ativar Protocolos J.A.R.V.I.S.</button>
+        <button class="btn-start" onclick="iniciarSistema()">Ativar Diagnóstico J.A.R.V.I.S.</button>
     </div>
 
-    <div id="header">SISTEMA J.A.R.V.I.S.</div>
-    
+    <div id="header">DIAGNÓSTICO DE NÚCLEO</div>
     <div id="chat"></div>
-
     <div id="footer">
         <div id="indicador">💠</div>
-        <p id="status-txt">SISTEMA EM ESPERA</p>
+        <p id="status-txt" style="font-size: 10px; margin-top: 8px; opacity: 0.5;">AGUARDANDO ATIVAÇÃO</p>
     </div>
 
     <script type="module">
         import { GoogleGenerativeAI } from "@google/generative-ai";
 
-        // CONFIGURAÇÃO DA CHAVE - SUBSTITUA ABAIXO
-        const API_KEY = "AIzaSyA45vXOoPnC2opkEei30tyE3TLhoQOVOlg"; 
+        // 1. COLE AQUI A CHAVE QUE TERMINA EM ...ct8Y
+        const API_KEY = "AIzaSyAgQd73RpCDiiryWChwhZPKgcl7Mj6ct8Y"; 
+
         const genAI = new GoogleGenerativeAI(API_KEY);
         const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
@@ -112,21 +50,15 @@
         const indicador = document.getElementById('indicador');
         const statusTxt = document.getElementById('status-txt');
 
-        // FUNÇÃO DE VOZ (LETRAMENTO JARVIS)
         window.falar = (texto) => {
             window.speechSynthesis.cancel();
             const msg = new SpeechSynthesisUtterance(texto);
-            const vozes = window.speechSynthesis.getVoices();
-            // Tenta carregar voz masculina brasileira do Google
-            msg.voice = vozes.find(v => v.lang === 'pt-BR' && v.name.includes('Google')) || vozes[0];
             msg.lang = 'pt-BR';
-            msg.rate = 1.05;
-            msg.pitch = 0.85;
+            msg.rate = 1.0;
             msg.onend = () => ligarOuvinte();
             window.speechSynthesis.speak(msg);
         };
 
-        // RECONHECIMENTO DE VOZ
         const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
         recognition.lang = 'pt-BR';
         recognition.continuous = true;
@@ -135,73 +67,50 @@
             try { 
                 recognition.start(); 
                 indicador.classList.remove('active');
-                statusTxt.innerText = 'AGUARDANDO "JARVIS"...';
+                statusTxt.innerText = 'DIGA "JARVIS"...';
             } catch(e) {}
         }
 
-        recognition.onresult = (event) => {
+        recognition.onresult = async (event) => {
             let comando = event.results[event.results.length - 1][0].transcript.toLowerCase().trim();
-            console.log("Ouvi:", comando);
-
+            
             if (comando.includes("jarvis")) {
                 recognition.stop();
                 indicador.classList.add('active');
-                statusTxt.innerText = 'A PROCESSAR...';
-                let promptLimpo = comando.replace("jarvis", "").trim();
-                executarAcao(promptLimpo || "Sim senhor?");
-            }
-        };
-
-        async function executarAcao(texto) {
-            // Mostrar texto do utilizador no chat
-            if(texto && texto !== "Sim senhor?") {
-                chat.innerHTML += `<div class="msg user">${texto}</div>`;
-            }
-
-            // COMANDOS RÁPIDOS (LIGAR, GOOGLE, APPS)
-            if (texto.includes("ligar para")) {
-                let alvo = texto.replace("ligar para", "").trim();
-                falar(`A iniciar chamada para ${alvo}.`);
-                window.location.href = `tel:${alvo}`;
-                return;
-            }
-            if (texto.includes("pesquisar no google") || texto.includes("pesquise no google")) {
-                let busca = texto.replace(/pesquisar no google|pesquise no google/g, "").trim();
-                falar(`A consultar dados sobre ${busca}.`);
-                window.open(`https://www.google.com/search?q=${busca}`, '_blank');
-                return;
-            }
-            if (texto.includes("abrir spotify")) {
-                falar("A iniciar o Spotify.");
-                window.location.href = "intent://#Intent;scheme=spotify;package=com.spotify.music;end";
-                return;
-            }
-
-            // RESPOSTA DA IA (CÉREBRO)
-            try {
-                const promptIA = `Tu és o J.A.R.V.I.S. Responde com um vocabulário extremamente culto, polido e com um sarcasmo elegante. Respostas curtas. Comando: ${texto}`;
-                const result = await model.generateContent(promptIA);
-                const resposta = await result.response.text();
+                statusTxt.innerText = 'ANALISANDO NÚCLEO...';
+                let pergunta = comando.replace("jarvis", "").trim() || "Teste de sistema";
                 
-                chat.innerHTML += `<div class="msg jarvis"><b>JARVIS:</b> ${resposta}</div>`;
-                window.falar(resposta);
-            } catch (e) {
-                window.falar("Erro de conexão com o núcleo central. Verifique a sua chave API.");
-                ligarOuvinte();
+                chat.innerHTML += `<div class="msg user">${pergunta}</div>`;
+                
+                try {
+                    // Chamada ao Gemini
+                    const result = await model.generateContent(pergunta);
+                    const resposta = await result.response.text();
+                    
+                    chat.innerHTML += `<div class="msg jarvis"><b>JARVIS:</b> ${resposta}</div>`;
+                    window.falar(resposta);
+                } catch (erro) {
+                    // REGISTRO DE ERRO TÉCNICO NA TELA
+                    console.error(erro);
+                    chat.innerHTML += `
+                        <div class="msg jarvis erro-card">
+                            <b>FALHA NO NÚCLEO CENTRAL:</b><br>
+                            Status: ${erro.name || 'Erro Desconhecido'}<br>
+                            Mensagem: ${erro.message}<br><br>
+                            <small>Verifique se você copiou a chave inteira e se o projeto está ativo no AI Studio.</small>
+                        </div>`;
+                    window.falar("Senhor, o diagnóstico detectou uma falha de conexão. Verifique o log em vermelho na tela.");
+                }
             }
             chat.scrollTop = chat.scrollHeight;
-        }
+        };
 
-        // INICIALIZAÇÃO APÓS CLIQUE
         window.iniciarSistema = () => {
             document.getElementById('overlay-inicio').style.display = 'none';
-            falar("Sistemas carregados e online. Pronto para o servir, senhor.");
+            window.falar("Diagnóstico iniciado. Aguardando comando de voz.");
         };
 
-        recognition.onend = () => {
-            if(document.getElementById('overlay-inicio').style.display === 'none') ligarOuvinte();
-        };
-
+        recognition.onend = () => { if(document.getElementById('overlay-inicio').style.display === 'none') ligarOuvinte(); };
     </script>
 </body>
 </html>

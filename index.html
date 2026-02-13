@@ -2,106 +2,98 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>J.A.R.V.I.S. | STABLE CORE</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>J.A.R.V.I.S. | FINAL PROTOCOL</title>
     <script type="importmap">
       { "imports": { "@google/generative-ai": "https://esm.run/@google/generative-ai" } }
     </script>
     <style>
         body { background: #000; color: #00f2ff; font-family: 'Segoe UI', sans-serif; margin: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; text-transform: uppercase; }
-        #header { text-align: center; padding: 15px; border-bottom: 2px solid #00f2ff; box-shadow: 0 0 15px #00f2ff; background: rgba(0,0,0,0.8); }
-        #chat { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px; }
-        .msg { padding: 12px; border-radius: 8px; max-width: 80%; font-size: 13px; line-height: 1.5; border: 1px solid rgba(0, 242, 255, 0.2); backdrop-filter: blur(10px); }
+        #header { text-align: center; padding: 15px; border-bottom: 2px solid #00f2ff; box-shadow: 0 0 15px #00f2ff; }
+        #chat { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 10px; }
+        .msg { padding: 12px; border-radius: 8px; max-width: 80%; font-size: 13px; border: 1px solid rgba(0, 242, 255, 0.2); }
         .jarvis { background: rgba(0, 242, 255, 0.1); border-left: 4px solid #00f2ff; align-self: flex-start; }
         .user { background: rgba(255, 255, 255, 0.05); border-right: 4px solid #fff; align-self: flex-end; }
-        #footer { height: 140px; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #000; border-top: 1px solid #111; }
-        #indicador { width: 65px; height: 65px; border-radius: 50%; border: 2px solid #00f2ff; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 20px #00f2ff; font-size: 28px; }
+        #footer { height: 120px; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #000; }
+        #indicador { width: 50px; height: 50px; border-radius: 50%; border: 2px solid #00f2ff; box-shadow: 0 0 15px #00f2ff; }
         .active { animation: pulse 0.8s infinite; }
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
-        #overlay-inicio { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.98); z-index: 1000; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        .btn-start { padding: 20px 40px; border: 2px solid #00f2ff; background: none; color: #00f2ff; font-size: 18px; cursor: pointer; box-shadow: 0 0 20px #00f2ff; }
+        #overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: #000; z-index: 2000; display: flex; align-items: center; justify-content: center; }
     </style>
 </head>
 <body>
 
-    <div id="overlay-inicio">
-        <button class="btn-start" onclick="iniciarSistema()">REINICIAR NÚCLEO CENTRAL</button>
+    <div id="overlay">
+        <button style="padding:20px; border:2px solid #00f2ff; background:none; color:#00f2ff; cursor:pointer;" onclick="inicializar()">INICIAR SISTEMA</button>
     </div>
 
-    <div id="header">J.A.R.V.I.S. | MODO DE SEGURANÇA</div>
+    <div id="header">NÚCLEO J.A.R.V.I.S.</div>
     <div id="chat"></div>
-
-    <div id="footer">
-        <div id="indicador">💠</div>
-        <p id="status" style="font-size: 10px; margin-top: 10px; color: #00f2ff; opacity: 0.6;">SISTEMA ESTABILIZADO</p>
-    </div>
+    <div id="footer"><div id="indicador"></div></div>
 
     <script type="module">
         import { GoogleGenerativeAI } from "@google/generative-ai";
 
-        // COLOQUE SUA CHAVE AQUI
-        const API_KEY = "AIzaSyC_UrWDYDWPmuDFq15J6e0ZRUHTn8dc1ec"; 
-        const genAI = new GoogleGenerativeAI(API_KEY);
-        
-        // MUDANÇA PARA O MODELO MAIS ESTÁVEL (GEMINI-PRO)
-        const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+        let genAI, model;
 
-        const chatBox = document.getElementById('chat');
-        const indicador = document.getElementById('indicador');
-
-        window.falar = (texto) => {
-            window.speechSynthesis.cancel();
-            const msg = new SpeechSynthesisUtterance(texto);
-            msg.lang = 'pt-BR';
-            msg.onend = () => ligarOuvinte();
-            window.speechSynthesis.speak(msg);
-        };
-
-        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-        const recognition = new SpeechRecognition();
-        recognition.lang = 'pt-BR';
-
-        function ligarOuvinte() {
-            try { recognition.start(); indicador.classList.remove('active'); } catch(e) {}
-        }
-
-        recognition.onresult = (event) => {
-            let comando = event.results[0][0].transcript.toLowerCase();
-            if (comando.includes("jarvis")) {
-                executarAcao(comando.replace("jarvis", "").trim() || "Olá");
+        window.inicializar = async () => {
+            // Passo 1: Pede a chave para o usuário (evita bloqueio do GitHub)
+            let key = prompt("SENHOR, INSIRA SUA API KEY DO GOOGLE AI STUDIO:");
+            
+            if (!key) {
+                alert("ACESSO NEGADO. CHAVE NECESSÁRIA.");
+                return;
             }
-        };
-
-        async function executarAcao(texto) {
-            chatBox.innerHTML += `<div class="msg user"><b>SENHOR:</b> ${texto}</div>`;
-            indicador.classList.add('active');
-            chatBox.scrollTop = chatBox.scrollHeight;
 
             try {
-                // Requisição direta ao Gemini Pro
-                const result = await model.generateContent("Você é o JARVIS. Responda curto: " + texto);
-                const response = await result.response;
-                const respostaFinal = response.text();
-
-                chatBox.innerHTML += `<div class="msg jarvis"><b>JARVIS:</b> ${respostaFinal}</div>`;
-                window.falar(respostaFinal);
-
-            } catch (error) {
-                console.error("FALHA CRÍTICA:", error);
-                chatBox.innerHTML += `<div class="msg jarvis" style="color:#ff6b6b"><b>ERRO TÉCNICO:</b> ${error.message}</div>`;
-                window.falar("O núcleo central não respondeu. Verifique sua conexão ou API Key.");
+                genAI = new GoogleGenerativeAI(key);
+                // Usando gemini-1.5-flash que você habilitou na imagem
+                model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+                
+                document.getElementById('overlay').style.display = 'none';
+                falar("Sistemas online. Chave aceita com sucesso.");
+            } catch (e) {
+                alert("ERRO AO CONFIGURAR IA: " + e.message);
             }
-            chatBox.scrollTop = chatBox.scrollHeight;
+        };
+
+        window.falar = (t) => {
+            window.speechSynthesis.cancel();
+            const m = new SpeechSynthesisUtterance(t);
+            m.lang = 'pt-BR';
+            m.onend = () => escutar();
+            window.speechSynthesis.speak(m);
+        };
+
+        const rec = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+        rec.lang = 'pt-BR';
+
+        function escutar() { try { rec.start(); } catch(e){} }
+
+        rec.onresult = (e) => {
+            let c = e.results[0][0].transcript.toLowerCase();
+            if (c.includes("jarvis")) {
+                processar(c.replace("jarvis", "").trim());
+            }
+        };
+
+        async function processar(t) {
+            const chat = document.getElementById('chat');
+            chat.innerHTML += `<div class="msg user">${t}</div>`;
+            document.getElementById('indicador').classList.add('active');
+
+            try {
+                const r = await model.generateContent("Responda como o Jarvis: " + t);
+                const res = await r.response.text();
+                chat.innerHTML += `<div class="msg jarvis">${res}</div>`;
+                falar(res);
+            } catch (err) {
+                chat.innerHTML += `<div class="msg jarvis" style="color:red">FALHA: ${err.message}</div>`;
+                falar("O núcleo central não respondeu. A chave pode ter expirado.");
+            }
+            document.getElementById('indicador').classList.remove('active');
+            chat.scrollTop = chat.scrollHeight;
         }
-
-        window.iniciarSistema = () => {
-            document.getElementById('overlay-inicio').style.display = 'none';
-            falar("Sistemas reiniciados em modo de segurança. Como posso ser útil?");
-        };
-
-        recognition.onend = () => {
-            if(!window.speechSynthesis.speaking) setTimeout(ligarOuvinte, 500);
-        };
     </script>
 </body>
 </html>

@@ -3,35 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>J.A.R.V.I.S. | STABLE PRO</title>
+    <title>J.A.R.V.I.S. | CORE ACTIVATED</title>
     <script type="importmap">
       { "imports": { "@google/generative-ai": "https://esm.run/@google/generative-ai" } }
     </script>
     <style>
-        /* DESIGN HOLOGRÁFICO STARK */
+        /* DESIGN HOLOGRÁFICO STARK INDUSTRIES */
         body { 
             background: #000; color: #00f2ff; font-family: 'Segoe UI', sans-serif; 
             margin: 0; display: flex; flex-direction: column; height: 100vh; 
             overflow: hidden; text-transform: uppercase;
         }
 
-        #overlay-inicio { 
-            position: fixed; top:0; left:0; width:100%; height:100%; 
-            background: rgba(0,0,0,0.95); z-index: 1000; 
-            display: flex; flex-direction: column; align-items: center; justify-content: center; 
-        }
-
-        .btn-start { 
-            padding: 20px 40px; border: 2px solid #00f2ff; background: none; 
-            color: #00f2ff; font-size: 18px; cursor: pointer; 
-            box-shadow: 0 0 20px #00f2ff; transition: 0.3s;
-        }
-
-        .btn-start:hover { background: #00f2ff; color: #000; }
-
         #header { 
             text-align: center; padding: 15px; border-bottom: 2px solid #00f2ff; 
             box-shadow: 0 0 15px #00f2ff; font-weight: bold; letter-spacing: 3px;
+            background: rgba(0,0,0,0.8);
         }
 
         #chat { 
@@ -40,8 +27,9 @@
         }
 
         .msg { 
-            padding: 12px; border-radius: 8px; max-width: 80%; font-size: 13px;
+            padding: 15px; border-radius: 8px; max-width: 80%; font-size: 13px;
             line-height: 1.5; border: 1px solid rgba(0, 242, 255, 0.2);
+            backdrop-filter: blur(10px);
         }
 
         .jarvis { background: rgba(0, 242, 255, 0.1); border-left: 4px solid #00f2ff; align-self: flex-start; }
@@ -50,62 +38,73 @@
         #footer { 
             height: 140px; display: flex; flex-direction: column; 
             align-items: center; justify-content: center; background: #000;
+            border-top: 1px solid #111;
         }
 
         #indicador { 
             width: 65px; height: 65px; border-radius: 50%; 
             border: 2px solid #00f2ff; display: flex; align-items: center; 
             justify-content: center; box-shadow: 0 0 20px #00f2ff; font-size: 28px;
+            transition: 0.3s;
         }
 
-        .active { animation: pulse 0.8s infinite; }
+        .active { animation: pulse 0.8s infinite; border-color: #fff; }
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
+
+        #overlay-inicio { 
+            position: fixed; top:0; left:0; width:100%; height:100%; 
+            background: rgba(0,0,0,0.98); z-index: 1000; 
+            display: flex; flex-direction: column; align-items: center; justify-content: center; 
+        }
+
+        .btn-start { 
+            padding: 20px 40px; border: 2px solid #00f2ff; background: none; 
+            color: #00f2ff; font-size: 18px; cursor: pointer; 
+            box-shadow: 0 0 20px #00f2ff; letter-spacing: 2px;
+        }
     </style>
 </head>
 <body>
 
     <div id="overlay-inicio">
-        <button class="btn-start" onclick="iniciarSistema()">CONECTAR AO NÚCLEO PRO</button>
+        <h2 style="color:#00f2ff; margin-bottom:20px;">SISTEMA PRONTO</h2>
+        <button class="btn-start" onclick="iniciarSistema()">ATIVAR PROTOCOLO FLASH</button>
     </div>
 
-    <div id="header">J.A.R.V.I.S. OS | STABLE BUILD</div>
+    <div id="header">J.A.R.V.I.S. | NÚCLEO ONLINE</div>
     
     <div id="chat"></div>
 
     <div id="footer">
         <div id="indicador">💠</div>
-        <p id="status" style="font-size: 10px; margin-top: 10px; color: #00f2ff; opacity: 0.6;">AGUARDANDO ATIVAÇÃO</p>
+        <p id="status" style="font-size: 10px; margin-top: 10px; color: #00f2ff; opacity: 0.6;">SISTEMA AGUARDANDO</p>
     </div>
 
     <script type="module">
         import { GoogleGenerativeAI } from "@google/generative-ai";
 
         // ==========================================
-        // CONFIGURAÇÃO: INSIRA SUA CHAVE ABAIXO
+        // CONFIGURAÇÃO: COLOQUE SUA CHAVE ABAIXO
         const API_KEY = "AIzaSyC_UrWDYDWPmuDFq15J6e0ZRUHTn8dc1ec"; 
         // ==========================================
 
         const genAI = new GoogleGenerativeAI(API_KEY);
-        // Utilizando o modelo gemini-pro que é o mais compatível universalmente
-        const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+        // O modelo flash-latest é o mais compatível com a API que você ativou
+        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
 
         const chatBox = document.getElementById('chat');
         const indicador = document.getElementById('indicador');
         const statusTxt = document.getElementById('status');
 
-        // SISTEMA DE VOZ
         window.falar = (texto) => {
             window.speechSynthesis.cancel();
             const msg = new SpeechSynthesisUtterance(texto);
-            const vozes = window.speechSynthesis.getVoices();
-            msg.voice = vozes.find(v => v.lang === 'pt-BR' && v.name.includes('Google')) || vozes[0];
             msg.lang = 'pt-BR';
             msg.rate = 1.1;
             msg.onend = () => ligarOuvinte();
             window.speechSynthesis.speak(msg);
         };
 
-        // RECONHECIMENTO DE VOZ
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         const recognition = new SpeechRecognition();
         recognition.lang = 'pt-BR';
@@ -114,7 +113,7 @@
             try { 
                 recognition.start(); 
                 indicador.classList.remove('active');
-                statusTxt.innerText = 'ESCUTANDO...';
+                statusTxt.innerText = 'PRONTO PARA OUVIR...';
             } catch(e) {}
         }
 
@@ -129,11 +128,11 @@
         async function executarAcao(texto) {
             chatBox.innerHTML += `<div class="msg user"><b>SENHOR:</b> ${texto}</div>`;
             indicador.classList.add('active');
-            statusTxt.innerText = 'PENSANDO...';
+            statusTxt.innerText = 'PROCESSANDO...';
             chatBox.scrollTop = chatBox.scrollHeight;
 
             try {
-                const result = await model.generateContent(`Aja como o assistente J.A.R.V.I.S. Responda de forma curta e sarcástica: ${texto}`);
+                const result = await model.generateContent(`Você é o JARVIS. Responda curto e elegante: ${texto}`);
                 const response = await result.response;
                 const respostaFinal = response.text();
 
@@ -141,30 +140,21 @@
                 window.falar(respostaFinal);
 
             } catch (error) {
-                console.error("ERRO:", error);
-                let msgErro = "Falha no sistema, senhor. ";
-                
-                if(error.message.includes("404")) {
-                    msgErro += "O modelo Gemini Pro não respondeu. Verifique as permissões da sua API Key.";
-                } else if(error.message.includes("API key")) {
-                    msgErro += "Sua chave de acesso está incorreta.";
-                }
-
+                console.error("FALHA:", error);
                 chatBox.innerHTML += `<div class="msg jarvis" style="color:#ff6b6b"><b>ERRO TÉCNICO:</b> ${error.message}</div>`;
-                window.falar(msgErro);
+                window.falar("Houve uma instabilidade no protocolo Flash. Verifique o console.");
             }
             chatBox.scrollTop = chatBox.scrollHeight;
         }
 
         window.iniciarSistema = () => {
             document.getElementById('overlay-inicio').style.display = 'none';
-            falar("Sistemas carregados. Conexão via Gemini Pro estabelecida. Às suas ordens, senhor.");
+            falar("Sistemas de linguagem ativados. Estamos oficialmente online, senhor.");
         };
 
         recognition.onend = () => {
             if(!window.speechSynthesis.speaking) setTimeout(ligarOuvinte, 500);
         };
-
     </script>
 </body>
 </html>

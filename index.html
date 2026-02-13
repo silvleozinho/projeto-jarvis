@@ -103,21 +103,20 @@
     <script type="module">
         import { GoogleGenerativeAI } from "@google/generative-ai";
 
-        // CONFIGURAÇÃO DA CHAVE - SUBSTITUA ABAIXO
-        const API_KEY = import.meta.env.VITE_GOOGLE_API_KEY || prompt("AIzaSyBe7diyilReWI3aZjKn5cvEH0t-Pt-ws18"); 
+        // CONFIGURAÇÃO DIRETA PARA GITHUB PAGES
+        const API_KEY = "AIzaSyBe7diyilReWI3aZjKn5cvEH0t-Pt-ws18"; 
         const genAI = new GoogleGenerativeAI(API_KEY);
-        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
+        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
         const chat = document.getElementById('chat');
         const indicador = document.getElementById('indicador');
         const statusTxt = document.getElementById('status-txt');
 
-        // FUNÇÃO DE VOZ (LETRAMENTO JARVIS)
+        // FUNÇÃO DE VOZ
         window.falar = (texto) => {
             window.speechSynthesis.cancel();
             const msg = new SpeechSynthesisUtterance(texto);
             const vozes = window.speechSynthesis.getVoices();
-            // Tenta carregar voz masculina brasileira do Google
             msg.voice = vozes.find(v => v.lang === 'pt-BR' && v.name.includes('Google')) || vozes[0];
             msg.lang = 'pt-BR';
             msg.rate = 1.05;
@@ -127,7 +126,8 @@
         };
 
         // RECONHECIMENTO DE VOZ
-        const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        const recognition = new SpeechRecognition();
         recognition.lang = 'pt-BR';
         recognition.continuous = true;
 
@@ -153,71 +153,54 @@
         };
 
         async function executarAcao(texto) {
-            // Mostrar texto do utilizador no chat
             if(texto && texto !== "Sim senhor?") {
                 chat.innerHTML += `<div class="msg user">${texto}</div>`;
+                chat.scrollTop = chat.scrollHeight;
             }
 
-            // COMANDOS RÁPIDOS (LIGAR, GOOGLE, APPS)
+            // COMANDOS RÁPIDOS
             if (texto.includes("ligar para")) {
                 let alvo = texto.replace("ligar para", "").trim();
                 falar(`A iniciar chamada para ${alvo}.`);
                 window.location.href = `tel:${alvo}`;
                 return;
             }
-            if (texto.includes("pesquisar no google") || texto.includes("pesquise no google")) {
-                let busca = texto.replace(/pesquisar no google|pesquise no google/g, "").trim();
+            if (texto.includes("google")) {
+                let busca = texto.replace(/pesquisar no google|pesquise no google|google/g, "").trim();
                 falar(`A consultar dados sobre ${busca}.`);
                 window.open(`https://www.google.com/search?q=${busca}`, '_blank');
                 return;
             }
-            if (texto.includes("abrir spotify")) {
-                falar("A iniciar o Spotify.");
-                window.location.href = "intent://#Intent;scheme=spotify;package=com.spotify.music;end";
-                return;
-            }
 
-            // RESPOSTA DA IA (CÉREBRO)
+            // RESPOSTA DA IA
             try {
-                const promptIA = `Tu és o J.A.R.V.I.S. Responde com um vocabulário extremamente culto, polido e com um sarcasmo elegante. Respostas curtas. Comando: ${texto}`;
+                const promptIA = `Tu és o J.A.R.V.I.S. Responda como o assistente do Tony Stark. Seja culto, polido e sutilmente sarcástico. Respostas curtas. Comando: ${texto}`;
                 const result = await model.generateContent(promptIA);
-                const resposta = await result.response.text();
+                const response = await result.response;
+                const resposta = response.text();
                 
                 chat.innerHTML += `<div class="msg jarvis"><b>JARVIS:</b> ${resposta}</div>`;
+                chat.scrollTop = chat.scrollHeight;
                 window.falar(resposta);
             } catch (e) {
-    console.error("❌ ERRO NO NÚCLEO CENTRAL:", e);
-    console.error("Mensagem:", e.message);
-    
-    let mensagem = "Erro de conexão com o núcleo central.";
-    
-    if (e.message.includes("API key")) {
-        mensagem = "Chave API inválida ou expirada.";
-    } else if (e.message.includes("401")) {
-        mensagem = "Chave API não autorizada.";
-    } else if (e.message.includes("429")) {
-        mensagem = "Limite de requisições excedido. Tente novamente em alguns minutos.";
-    }
-    
-    window.falar(mensagem);
-    ligarOuvinte();
-}
-            chat.scrollTop = chat.scrollHeight;
+                console.error("ERRO:", e);
+                window.falar("Erro de conexão com o núcleo central, senhor.");
+                ligarOuvinte();
+            }
         }
 
-        // INICIALIZAÇÃO APÓS CLIQUE
         window.iniciarSistema = () => {
             document.getElementById('overlay-inicio').style.display = 'none';
+            window.speechSynthesis.getVoices(); // Force load voices
             falar("Sistemas carregados e online. Pronto para o servir, senhor.");
         };
 
         recognition.onend = () => {
-            if(document.getElementById('overlay-inicio').style.display === 'none') ligarOuvinte();
+            if(document.getElementById('overlay-inicio').style.display === 'none' && !window.speechSynthesis.speaking) {
+                ligarOuvinte();
+            }
         };
 
     </script>
 </body>
-
 </html>
-
-

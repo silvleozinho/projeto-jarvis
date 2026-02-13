@@ -3,10 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>J.A.R.V.I.S. | Protocolo de Redundância</title>
-    <script type="importmap">
-      { "imports": { "@google/generative-ai": "https://esm.run/@google/generative-ai" } }
-    </script>
+    <title>J.A.R.V.I.S. | MK-IV STABLE</title>
     <style>
         body { 
             background: #000; color: #00f2ff; font-family: 'Segoe UI', sans-serif; 
@@ -19,11 +16,10 @@
         .jarvis { background: rgba(0, 242, 255, 0.1); border-left: 4px solid #00f2ff; align-self: flex-start; }
         .user { background: rgba(255, 255, 255, 0.05); border-right: 4px solid #fff; align-self: flex-end; }
         #footer { height: 120px; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #000; border-top: 1px solid #111; }
-        #indicador { width: 50px; height: 50px; border-radius: 50%; border: 2px solid #00f2ff; box-shadow: 0 0 15px #00f2ff; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+        #indicador { width: 50px; height: 50px; border-radius: 50%; border: 2px solid #00f2ff; box-shadow: 0 0 15px #00f2ff; display: flex; align-items: center; justify-content: center; }
         .active { animation: pulse 0.8s infinite; }
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
         
-        /* TELA DE LOGIN */
         #setup { 
             position: fixed; top:0; left:0; width:100%; height:100%; 
             background: #000; z-index: 9999; display: flex; 
@@ -43,51 +39,53 @@
 <body>
 
     <div id="setup">
-        <h2 style="letter-spacing: 5px;">INICIALIZAR J.A.R.V.I.S.</h2>
-        <p style="font-size: 10px; opacity: 0.7;">INSIRA SUA API KEY ABAIXO</p>
-        <input type="password" id="keyInput" placeholder="CHAVE DO GOOGLE AI STUDIO">
-        <button class="btn-connect" onclick="vincularNucleo()">CONECTAR NÚCLEO</button>
+        <h2 style="letter-spacing: 5px;">SISTEMA J.A.R.V.I.S.</h2>
+        <p style="font-size: 10px; color: #00f2ff;">MODO DE INJEÇÃO DE CHAVE</p>
+        <input type="password" id="keyInput" placeholder="COLE SUA NOVA API KEY">
+        <button class="btn-connect" onclick="vincularNucleo()">CONECTAR AO NÚCLEO</button>
     </div>
 
-    <div id="header">J.A.R.V.I.S. | CORE v3.0</div>
+    <div id="header">INTERFACE J.A.R.V.I.S. | v4.0</div>
     <div id="chat"></div>
 
     <div id="footer">
         <div id="indicador">💠</div>
-        <p id="status-text" style="font-size: 9px; margin-top: 8px; color: #00f2ff;">AGUARDANDO CONEXÃO</p>
+        <p id="status-text" style="font-size: 9px; margin-top: 8px; color: #00f2ff;">STATUS: STANDBY</p>
     </div>
 
     <script type="module">
-        import { GoogleGenerativeAI } from "@google/generative-ai";
+        import { GoogleGenerativeAI } from "https://cdn.skypack.dev/@google/generative-ai";
 
         let genAI, model;
-        const modelosParaTestar = ["gemini-1.5-flash", "gemini-pro", "gemini-1.0-pro"];
         const statusMsg = document.getElementById('status-text');
 
         window.vincularNucleo = async () => {
             const key = document.getElementById('keyInput').value.trim();
-            if (!key) return alert("INSIRA A CHAVE, SENHOR.");
+            if (!key) return alert("INSIRA A CHAVE.");
 
-            statusMsg.innerText = "TESTANDO MODELOS...";
+            statusMsg.innerText = "CALIBRANDO FREQUÊNCIAS...";
             genAI = new GoogleGenerativeAI(key);
             
-            for (let nome of modelosParaTestar) {
+            // Tentativa em cascata
+            const modelos = ["gemini-1.5-flash", "gemini-pro", "gemini-1.0-pro"];
+            
+            for (let m of modelos) {
                 try {
-                    model = genAI.getGenerativeModel({ model: nome });
-                    // Teste real de conexão
+                    console.log("Tentando modelo:", m);
+                    model = genAI.getGenerativeModel({ model: m });
                     const test = await model.generateContent("Oi");
                     await test.response;
                     
                     document.getElementById('setup').style.display = 'none';
-                    falar("Sistemas carregados. Conexão via " + nome + " estabelecida.");
-                    return; 
+                    falar("Sistemas de defesa online. Conectado via " + m + ". Às suas ordens, senhor.");
+                    return;
                 } catch (e) {
-                    console.warn("Modelo " + nome + " indisponível.");
+                    console.error("Falha no " + m);
                 }
             }
 
-            alert("ACESSO NEGADO: Nenhum modelo disponível para esta chave. Verifique se a API está ativa no Google Cloud.");
-            statusMsg.innerText = "FALHA NA CONEXÃO";
+            alert("ACESSO NEGADO: Verifique se a chave foi criada em um 'New Project' e se a API Generative Language está ativa.");
+            statusMsg.innerText = "FALHA DE CONEXÃO";
         };
 
         window.falar = (t) => {
@@ -122,13 +120,13 @@
             statusMsg.innerText = "PROCESSANDO...";
 
             try {
-                const r = await model.generateContent(`Aja como o Jarvis: ${t}`);
+                const r = await model.generateContent("Responda como o Jarvis: " + t);
                 const res = await r.response.text();
                 chat.innerHTML += `<div class="msg jarvis"><b>JARVIS:</b> ${res}</div>`;
                 falar(res);
             } catch (err) {
                 chat.innerHTML += `<div class="msg jarvis" style="color:red">ERRO: ${err.message}</div>`;
-                falar("Houve uma falha na resposta.");
+                falar("Houve uma queda de sinal no núcleo.");
             }
             document.getElementById('indicador').classList.remove('active');
             chat.scrollTop = chat.scrollHeight;

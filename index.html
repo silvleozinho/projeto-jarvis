@@ -90,7 +90,7 @@
 
         const genAI = new GoogleGenerativeAI(API_KEY);
         // O modelo flash-latest é o mais compatível com a API que você ativou
-        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
+        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
         const chatBox = document.getElementById('chat');
         const indicador = document.getElementById('indicador');
@@ -158,3 +158,4 @@
     </script>
 </body>
 </html>
+

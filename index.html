@@ -104,7 +104,7 @@
         import { GoogleGenerativeAI } from "@google/generative-ai";
 
         // CONFIGURAÇÃO DA CHAVE - SUBSTITUA ABAIXO
-        const API_KEY = prompt("AIzaSyBe7diyilReWI3aZjKn5cvEH0t-Pt-ws18"); 
+        const API_KEY = import.meta.env.VITE_GOOGLE_API_KEY || prompt("AIzaSyBe7diyilReWI3aZjKn5cvEH0t-Pt-ws18"); 
         const genAI = new GoogleGenerativeAI(API_KEY);
         const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
 
@@ -186,9 +186,22 @@
                 chat.innerHTML += `<div class="msg jarvis"><b>JARVIS:</b> ${resposta}</div>`;
                 window.falar(resposta);
             } catch (e) {
-                window.falar("Erro de conexão com o núcleo central. Verifique a sua chave API.");
-                ligarOuvinte();
-            }
+    console.error("❌ ERRO NO NÚCLEO CENTRAL:", e);
+    console.error("Mensagem:", e.message);
+    
+    let mensagem = "Erro de conexão com o núcleo central.";
+    
+    if (e.message.includes("API key")) {
+        mensagem = "Chave API inválida ou expirada.";
+    } else if (e.message.includes("401")) {
+        mensagem = "Chave API não autorizada.";
+    } else if (e.message.includes("429")) {
+        mensagem = "Limite de requisições excedido. Tente novamente em alguns minutos.";
+    }
+    
+    window.falar(mensagem);
+    ligarOuvinte();
+}
             chat.scrollTop = chat.scrollHeight;
         }
 
@@ -206,4 +219,5 @@
 </body>
 
 </html>
+
 

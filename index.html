@@ -104,7 +104,7 @@
         import { GoogleGenerativeAI } from "@google/generative-ai";
 
         // CONFIGURAÇÃO DA CHAVE - SUBSTITUA ABAIXO
-        const API_KEY = "AIzaSyCHuM5Uk--PfmBlMlJjNjvhuZKX7diNlOY"; 
+        const API_KEY = prompt("AIzaSyBe7diyilReWI3aZjKn5cvEH0t-Pt-ws18"); 
         const genAI = new GoogleGenerativeAI(API_KEY);
         const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
 
@@ -206,3 +206,4 @@
 </body>
 
 </html>
+

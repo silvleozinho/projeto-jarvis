@@ -3,89 +3,60 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>J.A.R.V.I.S. | MK-IV STABLE</title>
+    <title>J.A.R.V.I.S. | ULTIMATE BATTLE VERSION</title>
     <style>
-        body { 
-            background: #000; color: #00f2ff; font-family: 'Segoe UI', sans-serif; 
-            margin: 0; display: flex; flex-direction: column; height: 100vh; 
-            overflow: hidden; text-transform: uppercase; 
-        }
-        #header { text-align: center; padding: 15px; border-bottom: 2px solid #00f2ff; box-shadow: 0 0 15px #00f2ff; font-weight: bold; }
+        body { background: #000; color: #00f2ff; font-family: 'Segoe UI', sans-serif; margin: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; text-transform: uppercase; }
+        #header { text-align: center; padding: 15px; border-bottom: 2px solid #00f2ff; box-shadow: 0 0 15px #00f2ff; }
         #chat { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 10px; }
-        .msg { padding: 12px; border-radius: 8px; max-width: 80%; font-size: 13px; border: 1px solid rgba(0, 242, 255, 0.2); backdrop-filter: blur(10px); }
+        .msg { padding: 12px; border-radius: 8px; max-width: 80%; font-size: 13px; border: 1px solid rgba(0, 242, 255, 0.2); }
         .jarvis { background: rgba(0, 242, 255, 0.1); border-left: 4px solid #00f2ff; align-self: flex-start; }
         .user { background: rgba(255, 255, 255, 0.05); border-right: 4px solid #fff; align-self: flex-end; }
-        #footer { height: 120px; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #000; border-top: 1px solid #111; }
-        #indicador { width: 50px; height: 50px; border-radius: 50%; border: 2px solid #00f2ff; box-shadow: 0 0 15px #00f2ff; display: flex; align-items: center; justify-content: center; }
-        .active { animation: pulse 0.8s infinite; }
-        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
-        
-        #setup { 
-            position: fixed; top:0; left:0; width:100%; height:100%; 
-            background: #000; z-index: 9999; display: flex; 
-            flex-direction: column; align-items: center; justify-content: center; 
-        }
-        input { 
-            background: #111; border: 1px solid #00f2ff; color: #00f2ff; 
-            padding: 12px; width: 80%; max-width: 400px; margin: 15px 0; 
-            text-align: center; outline: none;
-        }
-        .btn-connect { 
-            padding: 15px 40px; border: 2px solid #00f2ff; background: none; 
-            color: #00f2ff; cursor: pointer; letter-spacing: 2px;
-        }
+        #footer { height: 100px; display: flex; align-items: center; justify-content: center; background: #000; }
+        #indicador { width: 40px; height: 40px; border-radius: 50%; border: 2px solid #00f2ff; }
+        .active { animation: pulse 0.8s infinite; box-shadow: 0 0 20px #00f2ff; }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.2); } 100% { transform: scale(1); } }
+        #setup { position: fixed; top:0; left:0; width:100%; height:100%; background: #000; z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        input { background: #111; border: 1px solid #00f2ff; color: #00f2ff; padding: 12px; width: 80%; max-width: 400px; margin: 15px 0; text-align: center; }
     </style>
 </head>
 <body>
 
     <div id="setup">
         <h2 style="letter-spacing: 5px;">SISTEMA J.A.R.V.I.S.</h2>
-        <p style="font-size: 10px; color: #00f2ff;">MODO DE INJEÇÃO DE CHAVE</p>
-        <input type="password" id="keyInput" placeholder="COLE SUA NOVA API KEY">
-        <button class="btn-connect" onclick="vincularNucleo()">CONECTAR AO NÚCLEO</button>
+        <input type="password" id="keyInput" placeholder="COLE SUA API KEY AQUI">
+        <button style="padding:15px 40px; border:2px solid #00f2ff; background:none; color:#00f2ff; cursor:pointer;" onclick="vincularNucleo()">CONECTAR NÚCLEO</button>
     </div>
 
-    <div id="header">INTERFACE J.A.R.V.I.S. | v4.0</div>
+    <div id="header">J.A.R.V.I.S. OS | FINAL STABLE</div>
     <div id="chat"></div>
-
-    <div id="footer">
-        <div id="indicador">💠</div>
-        <p id="status-text" style="font-size: 9px; margin-top: 8px; color: #00f2ff;">STATUS: STANDBY</p>
-    </div>
+    <div id="footer"><div id="indicador"></div></div>
 
     <script type="module">
-        import { GoogleGenerativeAI } from "https://cdn.skypack.dev/@google/generative-ai";
+        // Importação direta e simplificada
+        import { GoogleGenerativeAI } from "https://esm.run/@google/generative-ai";
 
         let genAI, model;
-        const statusMsg = document.getElementById('status-text');
 
         window.vincularNucleo = async () => {
             const key = document.getElementById('keyInput').value.trim();
-            if (!key) return alert("INSIRA A CHAVE.");
+            if (!key) return;
 
-            statusMsg.innerText = "CALIBRANDO FREQUÊNCIAS...";
-            genAI = new GoogleGenerativeAI(key);
-            
-            // Tentativa em cascata
-            const modelos = ["gemini-1.5-flash", "gemini-pro", "gemini-1.0-pro"];
-            
-            for (let m of modelos) {
-                try {
-                    console.log("Tentando modelo:", m);
-                    model = genAI.getGenerativeModel({ model: m });
-                    const test = await model.generateContent("Oi");
-                    await test.response;
-                    
+            try {
+                genAI = new GoogleGenerativeAI(key);
+                // Forçando o modelo 1.5-flash que é o mais comum em projetos novos
+                model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+                
+                // Teste de conexão enviando um oi invisível
+                const result = await model.generateContent("Oi");
+                const response = await result.response;
+                if (response.text()) {
                     document.getElementById('setup').style.display = 'none';
-                    falar("Sistemas de defesa online. Conectado via " + m + ". Às suas ordens, senhor.");
-                    return;
-                } catch (e) {
-                    console.error("Falha no " + m);
+                    falar("Sistemas de combate ativados. O núcleo está estável.");
                 }
+            } catch (e) {
+                console.error(e);
+                alert("FALHA DE AUTENTICAÇÃO. Verifique se a chave é de um 'New Project' e se você não está em uma rede restrita.");
             }
-
-            alert("ACESSO NEGADO: Verifique se a chave foi criada em um 'New Project' e se a API Generative Language está ativa.");
-            statusMsg.innerText = "FALHA DE CONEXÃO";
         };
 
         window.falar = (t) => {
@@ -99,25 +70,17 @@
         const rec = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
         rec.lang = 'pt-BR';
 
-        function escutar() { 
-            try { 
-                rec.start(); 
-                statusMsg.innerText = "ESCUTANDO...";
-            } catch(e){} 
-        }
+        function escutar() { try { rec.start(); } catch(e){} }
 
         rec.onresult = (e) => {
             let c = e.results[0][0].transcript.toLowerCase();
-            if (c.includes("jarvis")) {
-                processar(c.replace("jarvis", "").trim() || "Olá");
-            }
+            if (c.includes("jarvis")) processar(c.replace("jarvis", "").trim() || "Olá");
         };
 
         async function processar(t) {
             const chat = document.getElementById('chat');
             chat.innerHTML += `<div class="msg user"><b>SENHOR:</b> ${t}</div>`;
             document.getElementById('indicador').classList.add('active');
-            statusMsg.innerText = "PROCESSANDO...";
 
             try {
                 const r = await model.generateContent("Responda como o Jarvis: " + t);
@@ -125,8 +88,7 @@
                 chat.innerHTML += `<div class="msg jarvis"><b>JARVIS:</b> ${res}</div>`;
                 falar(res);
             } catch (err) {
-                chat.innerHTML += `<div class="msg jarvis" style="color:red">ERRO: ${err.message}</div>`;
-                falar("Houve uma queda de sinal no núcleo.");
+                chat.innerHTML += `<div class="msg jarvis" style="color:red">FALHA: ${err.message}</div>`;
             }
             document.getElementById('indicador').classList.remove('active');
             chat.scrollTop = chat.scrollHeight;
